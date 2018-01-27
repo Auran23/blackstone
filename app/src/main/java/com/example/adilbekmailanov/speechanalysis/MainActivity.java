@@ -3,6 +3,7 @@ package com.example.adilbekmailanov.speechanalysis;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
@@ -10,9 +11,8 @@ import android.speech.SpeechRecognizer;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
+import android.util.Log;
 import android.widget.CompoundButton;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -20,26 +20,35 @@ import android.widget.ToggleButton;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import me.itangqi.waveloadingview.WaveLoadingView;
 
-public class MainActivity extends AppCompatActivity implements
-        RecognitionListener {
+
+public class MainActivity extends AppCompatActivity implements RecognitionListener
+         {
     private static final int REQUEST_RECORD_PERMISSION = 100;
     private TextView returnedText;
     private ToggleButton toggleButton;
-    private ProgressBar progressBar;
     private SpeechRecognizer speech = null;
     private Intent recognizerIntent;
+    private WaveLoadingView waveLoadingView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         returnedText = (TextView) findViewById(R.id.textView1);
-        progressBar = (ProgressBar) findViewById(R.id.progressBar1);
         toggleButton = (ToggleButton) findViewById(R.id.toggleButton1);
+        waveLoadingView = (WaveLoadingView) findViewById(R.id.waveloadingview);
+        waveLoadingView.setShapeType(WaveLoadingView.ShapeType.CIRCLE);
+        waveLoadingView.setProgressValue(50);
+        waveLoadingView.setAmplitudeRatio(60);
+        waveLoadingView.setTopTitleStrokeColor(Color.GREEN);
+        waveLoadingView.setTopTitleStrokeWidth(3);
+        waveLoadingView.setAnimDuration(4000);
+        waveLoadingView.setWaveColor(getResources().getColor(R.color.colorPrimary));
+        waveLoadingView.startAnimation();
 
-
-        progressBar.setVisibility(View.INVISIBLE);
         speech = SpeechRecognizer.createSpeechRecognizer(this);
         speech.setRecognitionListener(this);
         recognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
@@ -52,15 +61,15 @@ public class MainActivity extends AppCompatActivity implements
             public void onCheckedChanged(CompoundButton buttonView,
                                          boolean isChecked) {
                 if (isChecked) {
-                    progressBar.setVisibility(View.VISIBLE);
-                    progressBar.setIndeterminate(true);
+                    Log.d("TAG", "TRUE");
+                    waveLoadingView.setWaveColor(getResources().getColor(R.color.colorYellow));
                     ActivityCompat.requestPermissions
                             (MainActivity.this,
                                     new String[]{Manifest.permission.RECORD_AUDIO},
                                     REQUEST_RECORD_PERMISSION);
                 } else {
-                    progressBar.setIndeterminate(false);
-                    progressBar.setVisibility(View.INVISIBLE);
+                    Log.d("TAG", "FALSE");
+                    waveLoadingView.setWaveColor(getResources().getColor(R.color.colorPrimary));
                     speech.stopListening();
                 }
             }
@@ -93,8 +102,6 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onBeginningOfSpeech() {
-        progressBar.setIndeterminate(false);
-        progressBar.setMax(10);
     }
 
     @Override
@@ -103,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onEndOfSpeech() {
-        progressBar.setIndeterminate(true);
+        Log.d("TAG", "onEndOfSpeech");
         toggleButton.setChecked(false);
     }
 
@@ -111,7 +118,9 @@ public class MainActivity extends AppCompatActivity implements
     public void onError(int errorCode) {
         String errorMessage = getErrorText(errorCode);
         returnedText.setText(errorMessage);
+        Log.d("TAG", "onError");
         toggleButton.setChecked(false);
+        waveLoadingView.setProgressValue(50);
     }
 
     @Override
@@ -133,13 +142,14 @@ public class MainActivity extends AppCompatActivity implements
         String text = "";
         for (String result : matches)
             text += result + "\n";
-
+        waveLoadingView.setProgressValue(50);
         returnedText.setText(text);
     }
 
     @Override
     public void onRmsChanged(float rmsdB) {
-        progressBar.setProgress((int) rmsdB);
+        waveLoadingView.setProgressValue((int) rmsdB*10);
+        waveLoadingView.setAnimDuration(4000-((int) rmsdB*100));
     }
 
     public static String getErrorText(int errorCode) {

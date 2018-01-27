@@ -1,33 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/colorLayoutBackground"
     >
 
-    <ProgressBar
-        android:id="@+id/progressBar1"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:layout_alignParentBottom="true" />
+   <me.itangqi.waveloadingview.WaveLoadingView
+        android:id="@+id/waveloadingview"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        app:wlv_borderColor="@color/colorYellow"
+        app:wlv_borderWidth="2dp"
+        app:wlv_progressValue="50"
+        app:wlv_round_rectangle="true"
+        app:wlv_shapeType="circle"
+        app:wlv_titleCenterColor="@color/colorLightYellow"
+        app:wlv_titleCenter="C"
+        app:wlv_titleCenterSize="24sp"
+        app:wlv_triangle_direction="north"
+        app:wlv_waveAmplitude="70"
+        app:wlv_waveColor="@color/colorYellow"
+       app:layout_constraintBottom_toBottomOf="parent"
+       android:layout_marginBottom="16dp"
+       android:layout_marginRight="8dp"
+       app:layout_constraintRight_toRightOf="parent"
+       android:layout_marginLeft="8dp"
+       app:layout_constraintLeft_toLeftOf="parent"
+        />
 
     <TextView
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true" />
+        android:textColor="@color/colorYellow"/>
 
     <ToggleButton
         android:id="@+id/toggleButton1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:pointerIcon="alias"
         android:text="ToggleButton"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="16dp"
+        android:layout_marginRight="8dp"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintLeft_toLeftOf="parent" />
 
-</RelativeLayout>
+</android.support.constraint.ConstraintLayout>
