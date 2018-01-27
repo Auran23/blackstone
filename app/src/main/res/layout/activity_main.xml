@@ -1,27 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/colorLayoutBackground"
     >
 
-   <me.itangqi.waveloadingview.WaveLoadingView
-        android:id="@+id/waveloadingview"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        app:wlv_borderColor="@color/colorYellow"
-        app:wlv_borderWidth="2dp"
-        app:wlv_progressValue="50"
-        app:wlv_round_rectangle="true"
-        app:wlv_shapeType="circle"
-        app:wlv_titleCenterColor="@color/colorLightYellow"
-        app:wlv_titleCenter="C"
-        app:wlv_titleCenterSize="24sp"
-        app:wlv_triangle_direction="north"
-        app:wlv_waveAmplitude="70"
-        app:wlv_waveColor="@color/colorYellow"
+   <com.example.adilbekmailanov.speechanalysis.MyWaveLoadingView
+       android:id="@+id/waveloadingview"
+       android:layout_width="100dp"
+       android:layout_height="100dp"
+       app:wlv_borderColor="@color/colorPrimary"
+       app:wlv_borderWidth="2dp"
+       app:wlv_progressValue="50"
+       app:wlv_round_rectangle="true"
+       app:wlv_shapeType="circle"
+       app:wlv_triangle_direction="north"
+       app:wlv_waveAmplitude="70"
+       app:wlv_waveColor="@color/colorPrimary"
        app:layout_constraintBottom_toBottomOf="parent"
        android:layout_marginBottom="16dp"
        android:layout_marginRight="8dp"
@@ -29,6 +27,31 @@
        android:layout_marginLeft="8dp"
        app:layout_constraintLeft_toLeftOf="parent"
         />
+
+    <com.github.mikephil.charting.charts.PieChart
+        android:id="@+id/pieChart"
+        android:layout_width="350dp"
+        android:layout_height="350dp"
+        android:layout_marginRight="8dp"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginBottom="30dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/waveloadingview">
+
+    </com.github.mikephil.charting.charts.PieChart>
+
+    <ImageView
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/ic_mic_light_grey"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="33dp"
+        android:layout_marginRight="8dp"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintLeft_toLeftOf="parent" />
 
     <TextView
         android:id="@+id/textView1"
@@ -43,10 +66,11 @@
         android:pointerIcon="alias"
         android:text="ToggleButton"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="55dp"
         android:layout_marginRight="8dp"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginLeft="8dp"
-        app:layout_constraintLeft_toLeftOf="parent" />
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintHorizontal_bias="0.971" />
 
 </android.support.constraint.ConstraintLayout>

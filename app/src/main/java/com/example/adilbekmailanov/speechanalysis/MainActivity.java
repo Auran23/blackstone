@@ -11,26 +11,35 @@ import android.speech.SpeechRecognizer;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.github.mikephil.charting.animation.Easing;
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.utils.ColorTemplate;
+
 import java.util.ArrayList;
 import java.util.Locale;
 
-import me.itangqi.waveloadingview.WaveLoadingView;
 
-
-public class MainActivity extends AppCompatActivity implements RecognitionListener
-         {
+public class MainActivity extends AppCompatActivity implements RecognitionListener {
+    private PieChart pieChart;
     private static final int REQUEST_RECORD_PERMISSION = 100;
     private TextView returnedText;
     private ToggleButton toggleButton;
     private SpeechRecognizer speech = null;
     private Intent recognizerIntent;
-    private WaveLoadingView waveLoadingView;
+    private MyWaveLoadingView waveLoadingView;
+    private Animation hide_anim;
+    private Animation view_anim;
 
 
     @Override
@@ -39,21 +48,43 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
         setContentView(R.layout.activity_main);
         returnedText = (TextView) findViewById(R.id.textView1);
         toggleButton = (ToggleButton) findViewById(R.id.toggleButton1);
-        waveLoadingView = (WaveLoadingView) findViewById(R.id.waveloadingview);
-        waveLoadingView.setShapeType(WaveLoadingView.ShapeType.CIRCLE);
-        waveLoadingView.setProgressValue(50);
-        waveLoadingView.setAmplitudeRatio(60);
-        waveLoadingView.setTopTitleStrokeColor(Color.GREEN);
-        waveLoadingView.setTopTitleStrokeWidth(3);
-        waveLoadingView.setAnimDuration(4000);
-        waveLoadingView.setWaveColor(getResources().getColor(R.color.colorPrimary));
-        waveLoadingView.startAnimation();
-
+        waveLoadingView = (MyWaveLoadingView) findViewById(R.id.waveloadingview);
         speech = SpeechRecognizer.createSpeechRecognizer(this);
         speech.setRecognitionListener(this);
         recognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+
+        hide_anim = AnimationUtils.loadAnimation(this, R.anim.hide_anim);
+        view_anim = AnimationUtils.loadAnimation(this, R.anim.visibility_anim);
+
+        pieChart = (PieChart) findViewById(R.id.pieChart);
+        pieChart.setUsePercentValues(true);
+        pieChart.getDescription().setEnabled(false);
+        pieChart.setExtraOffsets(5, 10, 5, 5);
+        pieChart.setDragDecelerationFrictionCoef(0.95f);
+        pieChart.setDrawHoleEnabled(false);
+
+        ArrayList<PieEntry> pieEntryArrayList = new ArrayList<>();
+
+        pieEntryArrayList.add(new PieEntry(36f, "SUSH"));
+        pieEntryArrayList.add(new PieEntry(36f, "SUSH"));
+        pieEntryArrayList.add(new PieEntry(36f, "SUSH"));
+        pieEntryArrayList.add(new PieEntry(36f, "SUSH"));
+
+        PieDataSet pieDataSet = new PieDataSet(pieEntryArrayList, "LOG");
+        pieDataSet.setSliceSpace(3f);
+        pieDataSet.setSelectionShift(5f);
+        pieDataSet.setColors(ColorTemplate.LIBERTY_COLORS);
+
+        final PieData pieData = new PieData((pieDataSet));
+        pieData.setValueTextSize(10f);
+        pieData.setValueTextColor(Color.YELLOW);
+
+
+        pieChart.setData(pieData);
+
+
 
         toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
@@ -61,15 +92,14 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
             public void onCheckedChanged(CompoundButton buttonView,
                                          boolean isChecked) {
                 if (isChecked) {
-                    Log.d("TAG", "TRUE");
-                    waveLoadingView.setWaveColor(getResources().getColor(R.color.colorYellow));
+                    waveLoadingView.setEnabled(true);
+                    if (pieChart.getVisibility() == View.VISIBLE) pieChart.startAnimation(hide_anim);
                     ActivityCompat.requestPermissions
                             (MainActivity.this,
                                     new String[]{Manifest.permission.RECORD_AUDIO},
                                     REQUEST_RECORD_PERMISSION);
                 } else {
-                    Log.d("TAG", "FALSE");
-                    waveLoadingView.setWaveColor(getResources().getColor(R.color.colorPrimary));
+                    waveLoadingView.setEnabled(false);
                     speech.stopListening();
                 }
             }
@@ -110,7 +140,6 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
 
     @Override
     public void onEndOfSpeech() {
-        Log.d("TAG", "onEndOfSpeech");
         toggleButton.setChecked(false);
     }
 
@@ -118,9 +147,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
     public void onError(int errorCode) {
         String errorMessage = getErrorText(errorCode);
         returnedText.setText(errorMessage);
-        Log.d("TAG", "onError");
         toggleButton.setChecked(false);
-        waveLoadingView.setProgressValue(50);
     }
 
     @Override
@@ -142,8 +169,9 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
         String text = "";
         for (String result : matches)
             text += result + "\n";
-        waveLoadingView.setProgressValue(50);
         returnedText.setText(text);
+        if (pieChart.getVisibility() == View.INVISIBLE) pieChart.startAnimation(view_anim);
+        pieChart.animateY(1000, Easing.EasingOption.EaseInCubic);
     }
 
     @Override
