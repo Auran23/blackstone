@@ -1,97 +1,181 @@
 package com.example.adilbekmailanov.speechanalysis;
 
 import android.Manifest;
-import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Bundle;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.ToggleButton;
 
-import ru.yandex.speechkit.Error;
-import ru.yandex.speechkit.SpeechKit;
-import ru.yandex.speechkit.Recognition;
-import ru.yandex.speechkit.Recognizer;
-import ru.yandex.speechkit.RecognizerListener;
+import java.util.ArrayList;
+import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, RecognizerListener {
 
-    boolean isListen = true;
-    Button listen_button;
-    TextView textview_result;
-    Recognizer recognizer;
-    RecognizerListener recognizerListener;
-
-    @Override
-    public void onRecordingBegin(Recognizer recognizer) {
-        Log.d("TAG", "BEGIN");
-    }
-    @Override
-    public void onSpeechDetected(Recognizer recognizer) {
-        Log.d("TAG", "onSpeechDetected");
-    }
-    @Override
-    public void onSpeechEnds(Recognizer recognizer) {
-        Log.d("TAG", "onSpeechEnds");
-    }
-    @Override
-    public void onRecordingDone(Recognizer recognizer) {
-        Log.d("TAG", "onRecordingDone");
-    }
-    @Override
-    public void onSoundDataRecorded(Recognizer recognizer, byte[] bytes) {
-        Log.d("TAG", "onSoundDataRecorded");
-    }
-    @Override
-    public void onPowerUpdated(Recognizer recognizer, float v) {
-        Log.d("TAG", "onPowerUpdated");
-    }
-    @Override
-    public void onPartialResults(Recognizer recognizer, Recognition recognition, boolean b) {
-        Log.d("TAG", "onPartialResults");
-    }
-    @Override
-    public void onRecognitionDone(Recognizer recognizer, Recognition recognition) {
-        Log.d("TAG", "onRecognitionDone");
-    }
-    @Override
-    public void onError(Recognizer recognizer, Error error) {
-        Log.d("TAG", "onError");
-    }
+public class MainActivity extends AppCompatActivity implements
+        RecognitionListener {
+    private static final int REQUEST_RECORD_PERMISSION = 100;
+    private TextView returnedText;
+    private ToggleButton toggleButton;
+    private ProgressBar progressBar;
+    private SpeechRecognizer speech = null;
+    private Intent recognizerIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        SpeechKit.getInstance().configure(getApplicationContext(), getResources().getString(R.string.api_key));
-        recognizerListener = this;
-        recognizer = Recognizer.create("ru-RU", Recognizer.Model.NOTES, recognizerListener);
-        recognizerListener.onRecordingBegin(recognizer);
-        listen_button = (Button) findViewById(R.id.listen_button);
-        listen_button.setOnClickListener(this);
-        textview_result = (TextView) findViewById(R.id.textview_result);
+        returnedText = (TextView) findViewById(R.id.textView1);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar1);
+        toggleButton = (ToggleButton) findViewById(R.id.toggleButton1);
+
+
+        progressBar.setVisibility(View.INVISIBLE);
+        speech = SpeechRecognizer.createSpeechRecognizer(this);
+        speech.setRecognitionListener(this);
+        recognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+
+        toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,
+                                         boolean isChecked) {
+                if (isChecked) {
+                    progressBar.setVisibility(View.VISIBLE);
+                    progressBar.setIndeterminate(true);
+                    ActivityCompat.requestPermissions
+                            (MainActivity.this,
+                                    new String[]{Manifest.permission.RECORD_AUDIO},
+                                    REQUEST_RECORD_PERMISSION);
+                } else {
+                    progressBar.setIndeterminate(false);
+                    progressBar.setVisibility(View.INVISIBLE);
+                    speech.stopListening();
+                }
+            }
+        });
+
     }
 
     @Override
-    public void onClick(View view) {
-        int id = view.getId();
-        switch (id) {
-            case R.id.listen_button:
-                if (isListen) {
-                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
-                        Log.d("TAG", "TEST");
-                        recognizer.start();
-                        isListen = false;
-                        listen_button.setText("MUTE");
-                    }
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case REQUEST_RECORD_PERMISSION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    speech.startListening(recognizerIntent);
                 } else {
-                    listen_button.setText("START");
-                    recognizer.mute();
-                    isListen = true;
+                    Toast.makeText(MainActivity.this, "Permission Denied!", Toast
+                            .LENGTH_SHORT).show();
                 }
         }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (speech != null) {
+            speech.destroy();
+        }
+    }
+
+
+    @Override
+    public void onBeginningOfSpeech() {
+        progressBar.setIndeterminate(false);
+        progressBar.setMax(10);
+    }
+
+    @Override
+    public void onBufferReceived(byte[] buffer) {
+    }
+
+    @Override
+    public void onEndOfSpeech() {
+        progressBar.setIndeterminate(true);
+        toggleButton.setChecked(false);
+    }
+
+    @Override
+    public void onError(int errorCode) {
+        String errorMessage = getErrorText(errorCode);
+        returnedText.setText(errorMessage);
+        toggleButton.setChecked(false);
+    }
+
+    @Override
+    public void onEvent(int arg0, Bundle arg1) {
+    }
+
+    @Override
+    public void onPartialResults(Bundle arg0) {
+    }
+
+    @Override
+    public void onReadyForSpeech(Bundle arg0) {
+    }
+
+    @Override
+    public void onResults(Bundle results) {
+        ArrayList<String> matches = results
+                .getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+        String text = "";
+        for (String result : matches)
+            text += result + "\n";
+
+        returnedText.setText(text);
+    }
+
+    @Override
+    public void onRmsChanged(float rmsdB) {
+        progressBar.setProgress((int) rmsdB);
+    }
+
+    public static String getErrorText(int errorCode) {
+        String message;
+        switch (errorCode) {
+            case SpeechRecognizer.ERROR_AUDIO:
+                message = "Audio recording error";
+                break;
+            case SpeechRecognizer.ERROR_CLIENT:
+                message = "Client side error";
+                break;
+            case SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS:
+                message = "Insufficient permissions";
+                break;
+            case SpeechRecognizer.ERROR_NETWORK:
+                message = "Network error";
+                break;
+            case SpeechRecognizer.ERROR_NETWORK_TIMEOUT:
+                message = "Network timeout";
+                break;
+            case SpeechRecognizer.ERROR_NO_MATCH:
+                message = "No match";
+                break;
+            case SpeechRecognizer.ERROR_RECOGNIZER_BUSY:
+                message = "RecognitionService busy";
+                break;
+            case SpeechRecognizer.ERROR_SERVER:
+                message = "error from server";
+                break;
+            case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
+                message = "No speech input";
+                break;
+            default:
+                message = "Didn't understand, please try again.";
+                break;
+        }
+        return message;
     }
 }
