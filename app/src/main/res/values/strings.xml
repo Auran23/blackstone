@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">SpeechAnalysis</string>
+    <string name="api_key">92ec967d-6de9-498b-8ad7-0e4acf7af733</string>
 </resources>
