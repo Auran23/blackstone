@@ -1,0 +1,75 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Alegreya Sans SC', sans-serif;
+  min-width: 320px;
+  overflow-x: hidden;
+  opacity: 1;
+}
+button {
+  cursor: pointer;
+}
+img {
+  vertical-align: middle;
+}
+input, button {
+  border: none;
+  outline: none;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+a, a:hover {
+  text-decoration: none;
+  color: inherit;
+}
+h3, a {
+  text-transform: uppercase;
+}
+h3, h4, h5 {
+  margin: 0;
+  font-weight: 300;
+}
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.over-hidden {
+  overflow: hidden;
+}
+
+.cursor-p {
+  cursor: pointer;
+}
+.text-center {
+  text-align: center;
+}
+.margin-0 {
+  margin: 0;
+}
+.img-responsive {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+.clear {
+  clear: both;
+}
+.rating-yellow {
+  color: #FFD700;
+}
+.orange {
+  background: rgba(255, 204, 102, .65);
+}
+.blue {
+  background: rgba(77, 166, 255, .65);
+}
+.green {
+  background: rgba(77, 255, 77, .65);
+}
+.electric-purple {
+  background: rgba(187, 51, 255, .65);
+}

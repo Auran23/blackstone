@@ -1,0 +1,242 @@
+@import "size";
+@import "libs";
+@import "custom";
+@import "fonts";
+@import "vars";
+
+
+/******************************************************************
+************************* Description ******************************
+*******************************************************************
+***    all. Header
+***    all. Product blog(small)
+***    all. Footer
+***    1. Index
+***      1.1 Banner
+***      1.2 Categories
+***      1.3 Products(medium)
+***    2. Single Product
+***      2.1 Product img(big, small)
+***      2.2 Description
+***      2.3 Tab
+***        2.3.1 Additional information
+***        2.3.2 Review
+*******************************************************************
+********************************************************************
+*******************************************************************/
+
+
+
+
+/******************************************************************
+*********** all.Header ********************************************
+******************************************************************/
+.header {
+	position: relative;
+	padding: 1rem 0;
+	z-index: 5;
+	background-color: $banner;
+	box-shadow: 0 3px 8px rgba(0, 0, 0, .2);
+}
+.header:after {
+	content: '';
+	clear: both;
+	display: block;
+}
+.navbar {
+	margin: 0 auto;
+	.logo {
+		float: left;
+		font-size: 1rem;
+	}
+	.site-nav {
+		position: absolute;
+		top: 100%;
+		right: 0;
+		background: #464655;
+		clip-path: circle(0 at top right);
+		transition: clip-path ease-in-out .6s;
+		> ul {
+			> li {
+				border-bottom: 1px solid #575766;
+				> a {
+					color: #EBEBD3;
+					padding: 2rem 4rem 2rem 2rem;
+					display: block;
+				}
+				> a:hover, .site-nav a:focus {
+					background: #E4B363;
+					color: #464655;
+				}
+			}
+		}
+		li:last-child {
+			border-bottom: none;
+		}
+	}
+
+	.site-nav-icon {
+		width: 1.3rem;
+		display: inline-block;
+		font-size: 1.2rem;
+		margin-right: .5rem;
+		text-align: right;
+		color: rgba(255, 255, 255, .9);
+	}
+
+	.site-nav-open {
+		clip-path: circle(150% at top right);
+	}
+
+	.menu-toggle {
+		padding: 1rem;
+		position: absolute;
+		top: .5rem;
+		right: .5rem;
+		cursor: pointer;
+	}
+	.hamburger, .hamburger::before, .hamburger::after {
+		content: '';
+		display: block;
+		background: #EBEBD3;
+		height: 3px;
+		width: 1.75rem;
+		border-radius: 3px;
+		transition: all ease-in-out .3s;
+	}
+	.hamburger::before {
+		transform: translateY(-6px);
+	}
+	.hamburger::after {
+		transform: translateY(3px);
+	}
+
+	.menu-toggle-open .hamburger {
+		transform: rotate(45deg);
+	}
+	.menu-toggle-open .hamburger::before {
+		opacity: 0;
+	}
+	.menu-toggle-open .hamburger::after {
+		transform: translateY(-3px) rotate(-90deg);
+	}
+	.form {
+		span {
+			display: none;
+		}
+		input {
+			padding: 2rem 4rem 2rem 2rem;
+			font-size: 1.1rem;
+			font-style: italic;
+		}
+	}
+}
+.form-user {
+	position: absolute;
+	right: 1rem;
+	li {
+		color: #EBEBD3;
+		display: inline-block;
+		margin: 0 .2rem;
+	}
+	i {
+		position: relative;
+		margin: 0 1.3rem 0 0;
+	}
+	li:hover {
+		color: #464655;;
+	}
+	span {
+		position: absolute;
+		bottom: .8rem;
+		font-size: .7rem;
+		padding: .03rem .3rem;
+		border-radius: 20px;
+		background-color: orange;
+	}
+	.fa-heart-o ~ span {
+		left: .8rem;
+	}
+	.fa-shopping-bag ~ span {
+		left: .5rem;
+	}
+}
+/*******************************************************************
+********************************************************************
+*******************************************************************/
+
+
+/******************************************************************
+*********** all.Product blog(small) *******************************
+******************************************************************/
+
+/*******************************************************************
+********************************************************************
+*******************************************************************/
+
+
+/******************************************************************
+*********** all.Footer ********************************************
+******************************************************************/
+
+/*******************************************************************
+********************************************************************
+*******************************************************************/
+
+
+/******************************************************************
+*********** 1.1 Banner ********************************************
+******************************************************************/
+.banner {
+  height: 94.5vh;
+  background-color: $banner;
+  position: relative;
+  overflow: hidden;
+  transition: all .2s;
+  .banner-images {
+    img {
+      height: 110vh;
+      position: absolute;
+      top: 2%;
+      display: inline-block;
+    }
+    .men {
+      left: 10%;
+    }
+    .woman {
+      right: 10%;
+    }
+  }
+  .banner-data {
+    width: 250px;
+    position: absolute;
+    top: 30%;
+    margin: 0 45%;
+    text-align: center;
+    text-transform: uppercase;
+    z-index: 2;
+    h4 {
+      color: $words;
+      font-size: 3rem;
+    }
+    button {
+      width: 200px;
+      border: none;
+      background-color: rgba(255, 255, 255, .9);
+      font-size: 2rem;
+      text-transform: uppercase;
+    }
+    button:hover {
+      background-color: rgba(255, 255, 255, 1);
+    }
+  }
+}
+/*******************************************************************
+********************************************************************
+*******************************************************************/
+
+
+
+
+@import "animate";
+@import "media"; // Всегда в конце
