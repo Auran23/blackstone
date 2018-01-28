@@ -6,6 +6,7 @@ public class TextAnalysis {
 
     private ArrayList<WordModel> wordModelList;
     private DataBaseHelper dataBaseHelper;
+    private int count = 0;
 
     public TextAnalysis (DataBaseHelper dataBaseHelper) {
         this.dataBaseHelper = dataBaseHelper;
@@ -20,16 +21,22 @@ public class TextAnalysis {
     }
 
     public ArrayList<String> replaceWords(String[] wordList) {
+        count = 0;
         ArrayList<String> newList = new ArrayList<>();
         for (String word : wordList) {
             WordModel result = dataBaseHelper.getWordModel(word);
             if (result != null) {
-                newList.add(result.getWord());
+                newList.add(result.getAlternative());
+                count++;
             } else {
                 newList.add(word);
             }
         }
         return newList;
+    }
+
+    public int getCount() {
+        return count;
     }
 
     public static ArrayList<String> removeRepeatingWords(ArrayList<String> wordList) {

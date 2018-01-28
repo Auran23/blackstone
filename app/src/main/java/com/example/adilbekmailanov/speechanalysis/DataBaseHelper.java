@@ -6,6 +6,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -15,13 +16,11 @@ import java.util.ArrayList;
 
 public class DataBaseHelper extends SQLiteOpenHelper {
     public static String DB_PATH;
-    public static final String DB_NAME = "bad_words.sql";
-    public static final String TABLE_NAME = "words";
-    public static final String COLUMN_ID = "id";
-    public static final String COLUMN_PARASITE_WORD = "parasite_words";
-    public static final String COLUMN_ALTERNATIVES = "alternatives";
-    public static final String COLUMN_CAN_DELETED = "can_deleted";
-    public static final String COLUMN_CATEGORIES_ID = "categories_id";
+    public static final String DB_NAME = "database.db";
+    public static final String TABLE_NAME = "_words";
+    public static final String COLUMN_ID = "_id";
+    public static final String COLUMN_PARASITE_WORD = "_parasite";
+    public static final String COLUMN_ALTERNATIVES = "_alternative";
     private SQLiteDatabase myDataBase;
     private final Context myContext;
 
@@ -29,6 +28,12 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         super(context, DB_NAME, null, 1);
         this.myContext = context;
         DB_PATH = "/data/data/" + context.getPackageName() + "/databases/";
+        try {
+            createDataBase();
+        } catch (IOException e) {
+            Log.e("TAG", e.getMessage());
+        }
+
     }
 
     public ArrayList<WordModel> loadAllWords() {
@@ -48,17 +53,12 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
     WordModel getWordModel(String word) {
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        Cursor cursor = db.query(TABLE_NAME, new String[] { COLUMN_PARASITE_WORD,
-                        COLUMN_ALTERNATIVES }, COLUMN_PARASITE_WORD + "=?",
-                new String[] { word }, null, null, null, null);
-        if (cursor != null)
-            cursor.moveToFirst();
-
-        WordModel wordModel = new WordModel(cursor.getString(0), cursor.getString(1));
-
-        return wordModel;
+        for (WordModel wordModel : loadAllWords()) {
+            if (wordModel.getWord().equals(word.toLowerCase())) {
+                return wordModel;
+            }
+        }
+        return null;
     }
 
     public void createDataBase() throws IOException {

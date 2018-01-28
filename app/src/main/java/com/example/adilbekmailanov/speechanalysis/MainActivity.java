@@ -12,6 +12,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -30,13 +31,16 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
     private MyWaveLoadingView waveLoadingView;
     private TextAnalysis textAnalysis;
     private DataBaseHelper dataBaseHelper;
-
+    private TextView resultText;
+    private ImageView imageView;
+    private TextView countTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        returnedText = (TextView) findViewById(R.id.textView1);
+        returnedText = (TextView) findViewById(R.id.textViewText);
+        resultText = (TextView) findViewById(R.id.textViewResult);
         toggleButton = (ToggleButton) findViewById(R.id.toggleButton1);
         waveLoadingView = (MyWaveLoadingView) findViewById(R.id.waveloadingview);
         speech = SpeechRecognizer.createSpeechRecognizer(this);
@@ -44,14 +48,14 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
         recognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
-
+        imageView = (ImageView) findViewById(R.id.icon);
+        waveLoadingView.setImageView(imageView);
         dataBaseHelper = new DataBaseHelper(getApplicationContext());
         textAnalysis = new TextAnalysis(dataBaseHelper);
-
+        countTextView = (TextView) findViewById(R.id.countTextView);
         waveLoadingView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
             }
         });
 
@@ -134,17 +138,17 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
     public void onResults(Bundle results) {
         ArrayList<String> matches = results
                 .getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-        String text = "";
-        for (String result : matches)
-            text += result + "\n";
+        String text = matches.get(0);
+        resultText.setText(text.toLowerCase());
         String newText = textAnalysis.updateText(text);
-        returnedText.setText(newText);
+        returnedText.setText(newText.toLowerCase());
+        countTextView.setText("Жаргоны: "+textAnalysis.getCount());
     }
 
     @Override
     public void onRmsChanged(float rmsdB) {
         waveLoadingView.setProgressValue((int) rmsdB*10);
-        waveLoadingView.setAnimDuration(4000-((int) rmsdB*100));
+        waveLoadingView.setAnimDuration(4000-((int) rmsdB*70));
     }
 
     public static String getErrorText(int errorCode) {
@@ -172,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                 message = "RecognitionService busy";
                 break;
             case SpeechRecognizer.ERROR_SERVER:
-                message = "error from server";
+                message = "Error from server";
                 break;
             case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
                 message = "No speech input";
