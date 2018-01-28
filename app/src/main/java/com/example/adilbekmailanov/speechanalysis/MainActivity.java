@@ -3,7 +3,6 @@ package com.example.adilbekmailanov.speechanalysis;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
@@ -12,34 +11,25 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import com.github.mikephil.charting.animation.Easing;
-import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.data.PieData;
-import com.github.mikephil.charting.data.PieDataSet;
-import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
 import java.util.Locale;
 
 
 public class MainActivity extends AppCompatActivity implements RecognitionListener {
-    private PieChart pieChart;
     private static final int REQUEST_RECORD_PERMISSION = 100;
     private TextView returnedText;
     private ToggleButton toggleButton;
     private SpeechRecognizer speech = null;
     private Intent recognizerIntent;
     private MyWaveLoadingView waveLoadingView;
-    private Animation hide_anim;
-    private Animation view_anim;
+    private TextAnalysis textAnalysis;
+    private DataBaseHelper dataBaseHelper;
 
 
     @Override
@@ -55,36 +45,15 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
         recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
 
-        hide_anim = AnimationUtils.loadAnimation(this, R.anim.hide_anim);
-        view_anim = AnimationUtils.loadAnimation(this, R.anim.visibility_anim);
+        dataBaseHelper = new DataBaseHelper(getApplicationContext());
+        textAnalysis = new TextAnalysis(dataBaseHelper);
 
-        pieChart = (PieChart) findViewById(R.id.pieChart);
-        pieChart.setUsePercentValues(true);
-        pieChart.getDescription().setEnabled(false);
-        pieChart.setExtraOffsets(5, 10, 5, 5);
-        pieChart.setDragDecelerationFrictionCoef(0.95f);
-        pieChart.setDrawHoleEnabled(false);
+        waveLoadingView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
-        ArrayList<PieEntry> pieEntryArrayList = new ArrayList<>();
-
-        pieEntryArrayList.add(new PieEntry(36f, "SUSH"));
-        pieEntryArrayList.add(new PieEntry(36f, "SUSH"));
-        pieEntryArrayList.add(new PieEntry(36f, "SUSH"));
-        pieEntryArrayList.add(new PieEntry(36f, "SUSH"));
-
-        PieDataSet pieDataSet = new PieDataSet(pieEntryArrayList, "LOG");
-        pieDataSet.setSliceSpace(3f);
-        pieDataSet.setSelectionShift(5f);
-        pieDataSet.setColors(ColorTemplate.LIBERTY_COLORS);
-
-        final PieData pieData = new PieData((pieDataSet));
-        pieData.setValueTextSize(10f);
-        pieData.setValueTextColor(Color.YELLOW);
-
-
-        pieChart.setData(pieData);
-
-
+            }
+        });
 
         toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
@@ -93,7 +62,6 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                                          boolean isChecked) {
                 if (isChecked) {
                     waveLoadingView.setEnabled(true);
-                    if (pieChart.getVisibility() == View.VISIBLE) pieChart.startAnimation(hide_anim);
                     ActivityCompat.requestPermissions
                             (MainActivity.this,
                                     new String[]{Manifest.permission.RECORD_AUDIO},
@@ -169,9 +137,8 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
         String text = "";
         for (String result : matches)
             text += result + "\n";
-        returnedText.setText(text);
-        if (pieChart.getVisibility() == View.INVISIBLE) pieChart.startAnimation(view_anim);
-        pieChart.animateY(1000, Easing.EasingOption.EaseInCubic);
+        String newText = textAnalysis.updateText(text);
+        returnedText.setText(newText);
     }
 
     @Override

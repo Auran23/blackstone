@@ -4,10 +4,12 @@ import java.util.ArrayList;
 
 public class TextAnalysis {
 
-    WordModel[] wordModelList;
+    private ArrayList<WordModel> wordModelList;
+    private DataBaseHelper dataBaseHelper;
 
-    public TextAnalysis (WordModel[] wordModelList) {
-        this.wordModelList = wordModelList;
+    public TextAnalysis (DataBaseHelper dataBaseHelper) {
+        this.dataBaseHelper = dataBaseHelper;
+        this.wordModelList = dataBaseHelper.loadAllWords();
     }
 
     public String updateText(String text) {
@@ -20,34 +22,14 @@ public class TextAnalysis {
     public ArrayList<String> replaceWords(String[] wordList) {
         ArrayList<String> newList = new ArrayList<>();
         for (String word : wordList) {
-            int result = binarySearch(word);
-            if (result != -1) {
-                newList.add(wordModelList[result].getWord());
+            WordModel result = dataBaseHelper.getWordModel(word);
+            if (result != null) {
+                newList.add(result.getWord());
             } else {
                 newList.add(word);
             }
         }
         return newList;
-    }
-
-    public int binarySearch(String key) {
-        int low = 0;
-        int high = wordModelList.length - 1;
-        while(high >= low) {
-            int middle = (low + high) / 2;
-            int result = toCompare(wordModelList[middle].getWord(), key);
-            switch (result) {
-                case 0:
-                    return middle;
-                case -1:
-                    low = middle + 1;
-                    break;
-                case 1:
-                    high = middle - 1;
-                    break;
-            }
-        }
-        return -1;
     }
 
     public static ArrayList<String> removeRepeatingWords(ArrayList<String> wordList) {

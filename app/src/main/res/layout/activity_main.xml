@@ -28,21 +28,7 @@
        app:layout_constraintLeft_toLeftOf="parent"
         />
 
-    <com.github.mikephil.charting.charts.PieChart
-        android:id="@+id/pieChart"
-        android:layout_width="350dp"
-        android:layout_height="350dp"
-        android:layout_marginRight="8dp"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginLeft="8dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginBottom="30dp"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/waveloadingview">
-
-    </com.github.mikephil.charting.charts.PieChart>
-
-    <ImageView
+ <ImageView
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:src="@drawable/ic_mic_light_grey"
@@ -57,7 +43,15 @@
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/colorYellow"/>
+        android:textColor="@color/colorYellow"
+        android:textSize="24sp"
+        android:text="ADSdasdasdzxvxc"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginRight="8dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="8dp" />
 
     <ToggleButton
         android:id="@+id/toggleButton1"
